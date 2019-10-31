@@ -3,6 +3,7 @@ from absl import app, flags
 from pysc2.env.environment import TimeStep, StepType
 from pysc2 import run_configs
 from s2clientprotocol import sc2api_pb2 as sc_pb
+from math import ceil
 import multiprocessing
 import importlib
 import glob
@@ -129,22 +130,33 @@ def main(unused):
           "{2}".format(replay_dir, agent_cls, processesNo))
 
     replays = glob.glob(replay_dir+'\*.SC2Replay')
-
-    if len(replays) == 0:
+    replaysNumber = len(replays)
+    if replaysNumber == 0:
         sys.stderr.write("[Error] Nie znaleziono żadnych powtórek w folderze docelowym!\n")
         return
     proc = []
-    p = multiprocessing.Process(target=start, args=(agent_cls, replays[0]))
-    p.start()
-    proc.append(p)
-    p = multiprocessing.Process(target=start, args=(agent_cls, replays[1]))
-    p.start()
-    proc.append(p)
 
-    for p in proc:
-        p.join()
-    for i in range(len(replays)):
-        pass
+    replaysPerProcess = ceil(replaysNumber/processesNo)
+    for i in range(processesNo):
+        startInd = i*replaysPerProcess
+        endInd = startInd + replaysPerProcess
+        if i < processesNo - 1:
+            currentReplays = replays[startInd:endInd]
+        else:
+            currentReplays = replays[startInd:]
+        print("[{:04d}->{}]    Procces nr {},  Liczba powtórek: {}".format(startInd, endInd, i, len(currentReplays)))
+
+    # p = multiprocessing.Process(target=start, args=(agent_cls, replays[0]))
+    # p.start()
+    # proc.append(p)
+    # p = multiprocessing.Process(target=start, args=(agent_cls, replays[1]))
+    # p.start()
+    # proc.append(p)
+    #
+    # for p in proc:
+    #     p.join()
+    # for i in range(len(replays)):
+    #     pass
 
 
 if __name__ == "__main__":
