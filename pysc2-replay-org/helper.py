@@ -113,9 +113,15 @@ class ReplayEnv:
 
             self._state = StepType.MID
 
+
 def start(agent_cls, replay_path):
-    replay = ReplayEnv(replay_path, agent_cls())
-    replay.start()
+    for replay in replay_path:
+        try:
+            replay = ReplayEnv(replay, agent_cls())
+            replay.start()
+        except Exception as e:
+            print(e)
+            print("Nie udało się odtworzyć powtórki!")
 
 
 def main(unused):
@@ -137,26 +143,26 @@ def main(unused):
     proc = []
 
     replaysPerProcess = ceil(replaysNumber/processesNo)
-    for i in range(processesNo):
+    for i in range(2):
         startInd = i*replaysPerProcess
         endInd = startInd + replaysPerProcess
         if i < processesNo - 1:
             currentReplays = replays[startInd:endInd]
         else:
             currentReplays = replays[startInd:]
+        p = multiprocessing.Process(target=start, args=(agent_cls, currentReplays))
+        p.start()
+        proc.append(p)
         print("[{:04d}->{}]    Procces nr {},  Liczba powtórek: {}".format(startInd, endInd, i, len(currentReplays)))
 
-    # p = multiprocessing.Process(target=start, args=(agent_cls, replays[0]))
-    # p.start()
-    # proc.append(p)
-    # p = multiprocessing.Process(target=start, args=(agent_cls, replays[1]))
-    # p.start()
-    # proc.append(p)
-    #
-    # for p in proc:
-    #     p.join()
-    # for i in range(len(replays)):
-    #     pass
+    p = multiprocessing.Process(target=start, args=(agent_cls, replays[1]))
+    p.start()
+    proc.append(p)
+
+    for p in proc:
+        p.join()
+    for i in range(len(replays)):
+        pass
 
 
 if __name__ == "__main__":
