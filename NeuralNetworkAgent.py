@@ -46,7 +46,7 @@ class MyAgent(base_agent.BaseAgent):
                 print("Starting position: Left Top")
 
         self.minerals = int(obs.observation["player"][1])
-        print(self.minerals)
+
         if obs.observation["game_loop"] % 10 == 0 and not self.hold:
             self.actionToPerform = self.make_decision(obs)
 
@@ -58,12 +58,14 @@ class MyAgent(base_agent.BaseAgent):
                 self.hold = True
 
             if self.actionToPerform == 1:
+                print("Recruit!")
                 return self.recruit(obs)
 
             elif self.actionToPerform == 2:
                 return self.build(obs)
 
             elif self.actionToPerform == 3:
+                print("Attack!")
                 pass
 
             return actions.RAW_FUNCTIONS.no_op()
@@ -76,6 +78,7 @@ class MyAgent(base_agent.BaseAgent):
                 if unit.unit_type == unit_type]
 
     def build(self, obs):
+        print("Build!")
         if build_order and self.buildingsQueued is None:
             building = build_order.pop()
             if building == "pylon":
@@ -85,20 +88,20 @@ class MyAgent(base_agent.BaseAgent):
         return actions.RAW_FUNCTIONS.no_op()
 
     def buildPylon(self, obs):
-        print("Build pylon!")
         probes = self.get_units_by_type(obs, units.Protoss.Probe)
         if len(probes) > 0 and self.minerals >= 100:
-            print("Build pylon!")
+
             if self.startLOC == 1:
-                pylon_xy = (38, 38)
+                pylon_xy = (45, 45)
             else:
-                pylon_xy = (20, 20)
+                pylon_xy = (19, 19)
+            print("Build pylon! Loc: {}".format(pylon_xy))
             dists = self.get_distances(probes, pylon_xy)
             probe = probes[np.argmin(dists)]
             self.hold = False
             self.buildingsQueued = None
             self.buildings[1] += 1
-            return actions.RAW_FUNCTIONS.Build_Gateway_pt("now", probe.tag, pylon_xy)
+            return actions.RAW_FUNCTIONS.Build_Pylon_pt("now", probe.tag, pylon_xy)
         else:
             self.buildingsQueued = "pylon"
             return actions.RAW_FUNCTIONS.no_op()
