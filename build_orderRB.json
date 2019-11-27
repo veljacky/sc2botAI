@@ -1,0 +1,49 @@
+{
+    "buildings":[
+        {
+            "type": "pylon",
+            "x": 45,
+            "y": 45
+        },
+        {
+            "type": "pylon",
+            "x": 47,
+            "y": 47
+        },
+        {
+            "type": "gateway",
+            "x": 45,
+            "y": 46
+        },
+        {
+            "type": "assimilator",
+            "x": 48,
+            "y": 47
+        },
+        {
+            "type": "assimilator",
+            "x": 48,
+            "y": 47
+        },
+        {
+            "type": "cyberneticscore",
+            "x": 47,
+            "y": 48
+        }],
+        "units": [
+        {
+            "type": "probe"
+        },
+        {
+            "type": "probe"
+        },
+        {
+            "type": "probe"
+        },
+        {
+            "type": "probe"
+        },
+        {
+            "type": "probe"
+        }]
+}
